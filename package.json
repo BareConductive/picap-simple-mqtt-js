@@ -1,0 +1,15 @@
+{
+  "name": "picap-simple-mqtt-js",
+  "version": "1.0.0",
+  "main": "simple-touch.js",
+  "author": "Szymon Kaliski",
+  "license": "CC-BY-SA-3.0",
+  "scripts": {
+    "start": "node simple-touch.js"
+  },
+  "dependencies": {
+    "mqtt": "^2.0.0",
+    "node-picap": "^1.0.0",
+    "yargs": "^5.0.0"
+  }
+}
