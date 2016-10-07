@@ -47,15 +47,8 @@ if (argv.help || !(argv.b || argv.broker)) { printHelp(); }
 var broker = argv.b || argv.broker;
 var client = mqtt.connect('mqtt://' + broker);
 
-try {
-  // correct address for the Pi Cap - other boards may vary
-  mpr121 = new MPR121('0x5C'); 
-}
-
-catch (e) {
-  console.log(e);
-  process.exit(1);
-}
+// correct address for the Pi Cap - other boards may vary
+mpr121 = new MPR121('0x5C'); 
 
 client.on('connect', function() {
   mpr121.on('data', function(data) {
