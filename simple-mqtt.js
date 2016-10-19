@@ -35,8 +35,10 @@ function printHelp() {
   console.log('Sends Pi Cap touch readings through MQTT - MUST be run as root.\n');
   console.log('Usage: node simple-mqtt.js [OPTIONS]\n');
   console.log('Options:');
-  console.log('  -b, --broker  MQTT broker [REQUIRED]');
-  console.log('      --help    displays this message');
+  console.log('  -b, --broker    MQTT broker [REQUIRED]');
+  console.log('  -u, --username  MQTT broker username [OPTIONAL]');
+  console.log('  -p, --password  MQTT broker password [OPTIONAL]');
+  console.log('      --help      displays this message');
 
   process.exit(0);
 }
@@ -44,21 +46,33 @@ function printHelp() {
 // sift through the arguments and set stuff up / show help as appropriate
 if (argv.help || !(argv.b || argv.broker)) { printHelp(); }
 
-var broker = argv.b || argv.broker;
-var client = mqtt.connect('mqtt://' + broker);
+var broker   = argv.b || argv.broker;
+var username = argv.u || argv.username;
+var password = argv.p || argv.password;
+var client   = mqtt.connect('mqtt://' + broker, { username: username, password: password });
 
 // correct address for the Pi Cap - other boards may vary
-mpr121 = new MPR121('0x5C'); 
+mpr121 = new MPR121('0x5C');
 
 client.on('connect', function() {
   mpr121.on('data', function(data) {
     data.map(function(electrode, i) {
       // publish new touch and release events
       if (electrode.isNewTouch) {
-        client.publish('picap/touched', '' + i);
+        if (username) {
+          client.publish(username + '/feeds/picap-touched', '' + i);
+        }
+        else {
+          client.publish('/feeds/picap-touched', '' + i);
+        }
       }
       else if (electrode.isNewRelease) {
-        client.publish('picap/released', '' + i);
+        if (username) {
+          client.publish(username + '/feeds/picap-released', '' + i);
+        }
+        else {
+          client.publish('/feeds/picap-released', '' + i);
+        }
       }
     });
   });
